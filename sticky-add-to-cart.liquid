@@ -1,358 +1,405 @@
 <div class="product-sticky-add-cart-new custom-sticky-form">
-
-<div class="sticky-product-wrapper page-width">
- <div class="sticky-product-title-image">
-   <div class="sticky-image-wrapper">
-     {% assign featured_image = product.selected_variant.featured_image | default: product.featured_image %}
-   {{ featured_image | img_url:"80x" | img_tag }}
+   <div class="sticky-product-wrapper page-width">
+      <div class="sticky-product-title-image">
+         <div class="sticky-image-wrapper">
+            {% assign featured_image = product.selected_variant.featured_image | default: product.featured_image %}
+            {{ featured_image | img_url:"80x" | img_tag }}
+         </div>
+         <div class="product-title-desc-wrapper-sticky">
+            <h3>{{ product.title | truncate: 30, '....' }}</h3>
+            {% render 'price' %}
+         </div>
+      </div>
+      <div class="sticky-form-wrapper">
+         {% form 'product', product, id:'product-form' , novalidate: 'novalidate' %}
+         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
+         <div class="sticky-cart-custom-wrapper">
+            {% unless product.has_only_default_variant %}
+            <variant-selector2 data-url="{{ product.url }}" data-section="{{ section.id }}">
+               {% for option in product.options_with_values %}
+               <div class="select-ption-custom">
+                  <label for="Option-{{ section.id }}-custom-{{ forloop.index }}">{{option.name | truncate: 10 }}</label>
+                  <select class="select-variant-options" name="options[{{option.name | escape}}]" id="Option-{{ section.id }}-custom-{{ forloop.index0 }}">
+                  {% for value in option.values %}
+                  <option
+                  {% if option.selected_value == value %}
+                  selected="selected"
+                  {% endif %}
+                  value="{{ value }}">
+                  {{ value }}
+                  </option>
+                  {% endfor %}
+                  </select>
+               </div>
+               {% endfor %}
+               <script type="application/json">
+                  {{product.variants | json}}
+               </script>
+            </variant-selector2>
+            {% endunless %}
+            <div class="quantity-custom-sticky">
+               <label class="sticky-label">Aantal</label>
+               <div class="input-group-sticky-cart">
+                  <input min="1" type="number" id="quantity" name="quantity" value="1"/>
+               </div>
+               <div class="plus-minus-sticky-cart">
+                  <button onclick="increaseValue()" type="button" class="sticky-plus">
+                  +
+                  </button>
+                  <button onclick="decreaseValue()" type="button" class="sticky-minus">
+                  -
+                  </button>
+               </div>
+            </div>
+            <div class="submit-button-custom">
+               <button
+               type="submit"
+               name="add"
+               class="add-to-cart-custom-button btn"
+               {%- if product.selected_or_first_available_variant.available == false -%} disabled {% endif %}>
+               <span>
+               {%- if product.selected_or_first_available_variant.available -%}
+               {{ 'products.product.add_to_cart' | t }}
+               {%- else -%}
+               {{ 'products.product.sold_out' | t }}
+               {%- endif -%}
+               </span>
+               </button>
+            </div>
+         </div>
+         {% endform %}
+      </div>
    </div>
-   
-    <div class="product-title-desc-wrapper-sticky">
-      <h3>{{ product.title | truncate: 25, '....' }}</h3>
-      {% render 'price' %}
-    </div>
- </div>
-
-  <div class="sticky-form-wrapper">
-    {% form 'product', product, id:'product-form' , novalidate: 'novalidate' %}
-<input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
-<div class="sticky-cart-custom-wrapper">
-
-{% unless product.has_only_default_variant %}
-<variant-selector2 data-url="{{ product.url }}" data-section="{{ section.id }}">
-{% for option in product.options_with_values %}
-<div class="select-ption-custom">
-  <label for="Option-{{ section.id }}-custom-{{ forloop.index }}">{{option.name | truncate: 10 }}</label>
-    <select class="select-variant-options" name="options[{{option.name | escape}}]" id="Option-{{ section.id }}-custom-{{ forloop.index0 }}">
-      {% for value in option.values %}
-        <option
-        {% if option.selected_value == value %}
-        selected="selected"
-        {% endif %}
-        value="{{ value }}">
-        {{ value }}
-        </option>
-      {% endfor %}
-    </select>
-  </div>
-  {% endfor %}
-    <script type="application/json">
-      {{product.variants | json}}
-      </script>
-    </variant-selector2>
-{% endunless %}
-
-
-<div class="quantity-custom-sticky">
-  <label class="sticky-label">Aantal</label>
-  <div class="input-group-sticky-cart">
-    <input  id="qty-value" type="hidden" name="id" value="{{ product.variants.first.id }}" />
-    <input min="1" type="number" id="quantity" name="quantity" value="1"/>
-  </div>
-  <div class="plus-minus-sticky-cart">
-     <button onclick="increaseValue()" type="button" class="sticky-plus">
-       +
-     </button>
-    <button onclick="decreaseValue()" type="button" class="sticky-minus">
-       -
-     </button>
-  </div>
-</div>
-  
-<div class="submit-button-custom">
-      <button
-        type="submit"
-        name="add"
-        class="add-to-cart-custom-button btn"
-        {%- if product.selected_or_first_available_variant.available == false -%} disabled {% endif %}>
-        <span>
-        {%- if product.selected_or_first_available_variant.available -%}
-        
-        {{ 'products.product.add_to_cart' | t }}
-        {%- else -%}
-        {{ 'products.product.sold_out' | t }}
-        {%- endif -%}
-        </span>
-      
-      </button>
-  </div>
-</div>
-{% endform %}
-  </div>
-  
 </div>
 
-</div>
 
+
+// stylesheet
 <style>
-.input-group-sticky-cart {
-    width: 40px;
-    padding-top: 11px;
-    padding-left: 3px;
+   .input-group-sticky-cart {
+	width: 40px !important;
+	padding-top: 11px;
+	padding-left: 3px;
 }
 
 label.sticky-label {
-    position: absolute;
-    top: 2px;
-    left: 5px;
-    font-size: 12px;
+	position: absolute;
+	top: 2px;
+	left: 5px;
+	font-size: 12px;
 }
+
 .plus-minus-sticky-cart button {
-    background: transparent;
-    font-size: 20px;
-    height: 25px;
-    width: 30px;
-    border: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    cursor: pointer;
+	background: transparent;
+	font-size: 20px;
+	height: 24px;
+	width: 30px;
+	border: 1px solid #ddd;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	cursor: pointer;
 }
+
 .input-group-sticky-cart input {
-    width: 100%;
+	width: 100%;
 }
-  
-  .quantity-custom-sticky input {
-    border: none;
-    outline:none;
- }
-  .quantity-custom-sticky input:focus{
-    outline:none;
-    display:none;
-  }
+
+.quantity-custom-sticky input {
+	border: none;
+	outline: none;
+}
+
+.quantity-custom-sticky input:focus {
+	outline: none;
+	display: none;
+}
 
 /* Chrome, Safari, Edge, Opera */
 .quantity-custom-sticky input::-webkit-outer-spin-button,
 .quantity-custom-sticky input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+	-webkit-appearance: none;
+	margin: 0;
 }
 
 /* Firefox */
 .quantity-custom-sticky input[type=number] {
-  -moz-appearance: textfield;
+	-moz-appearance: textfield;
 }
 
 .plus-minus-sticky-cart {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
+
 .quantity-custom-sticky {
-    margin-right: 10px;
-    border: 1px solid #ddd;
-    width: 92px;
-    height: 5rem;
-    display: flex;
-    position:relative;
-    align-items: center;
-    justify-content: space-between;
+	margin-right: 10px;
+	border: 1px solid #ddd;
+	width: 92px;
+	height: 4rem;
+	display: flex;
+	position: relative;
+	align-items: center;
+	justify-content: space-between;
 }
+
 .sticky-cart-custom-wrapper {
-display: flex;
-align-items: center;
-justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
+
 .quantity-custom-sticky .quantity__button {
-    width: calc(2.5rem / var(--font-body-scale));
+	width: calc(2.5rem / var(--font-body-scale)) !important;
 }
+
 .quantity-custom-sticky .quantity {
-    margin-right:10px;
-    width: calc(8rem / var(--font-body-scale) + var(--inputs-border-width) * 2);
+	margin-right: 10px;
+	width: calc(8rem / var(--font-body-scale) + var(--inputs-border-width) * 2) !important;
 }
-  .quantity-custom-sticky .quantity:before{
-    background:transparent;
-  }
+
+.quantity-custom-sticky .quantity:before {
+	background: transparent;
+}
+
 .select-variant-options {
-    outline: none;
-    padding: 11px 16px;
-    margin-right: 10px;
-    cursor: pointer;
-    padding-left: 0;
-    box-shadow: none;
-    border-radius: 0;
-    border: none;
-    margin-top: 10px;
+	outline: none;
+	padding: 11px 16px;
+	margin-right: 10px;
+	cursor: pointer;
+	padding-left: 0;
+	box-shadow: none;
+	border-radius: 0;
+	border: none;
+	margin-top: 10px;
 }
+
 span.icon-caret svg {
-width: 20px;
-height: 20px;
-margin-bottom: 0;
-padding-bottom: 0;
-line-height: 0;
+	width: 20px;
+	height: 20px;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	line-height: 0;
 }
+
 .submit-button-custom button {
-    padding: 17px 15px;
-    border: none;
-    background: #37A471;
-    color: #fff;
-    cursor: pointer;
-    font-weight: 600;
+	padding: 17px 15px;
+	border: none;
+	background: rgba(var(--color-button), var(--alpha-button-background));
+	color: #fff;
+	cursor: pointer;
+	font-weight: 600;
 }
-  .select-ption-custom {
-    position: relative;
-    border: 1px solid #ddd;
-    margin-right: 10px;
+
+.select-ption-custom {
+	position: relative;
+	border: 1px solid #ddd;
+	margin-right: 10px;
 }
 
 .select-ption-custom label {
-    position: absolute;
-    top: 1px;
-    font-size: 12px;
-    left: 5px;
+	position: absolute;
+	top: 1px;
+	font-size: 12px;
+	left: 5px;
 }
+
 .sticky-product-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
-  .sticky-product-title-image {
-    display: flex;
-    align-items: center;
+
+.sticky-product-title-image {
+	display: flex;
+	align-items: center;
 }
 
 .sticky-image-wrapper {
-    width: 60px;
-    min-width: 60px;
-    margin-right: 11px;
-    max-height: 60px;
-    height: 60px;
+	width: 60px;
+	min-width: 60px;
+	margin-right: 11px;
+	max-height: 60px;
+	height: 60px;
 }
-  .product-title-desc-wrapper-sticky h3 {
-    font-size: 15px;
-    margin: 0;
+
+.product-title-desc-wrapper-sticky h3 {
+	font-size: 15px;
+	margin: 0;
 }
 
 .sticky-image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
+
 .product-sticky-add-cart-new.custom-sticky-form {
-position: fixed;
-padding: 20px 0;
-bottom: 0;
-z-index: 9999;
-width: 100%;
-background: #fff;
-transform: translateY(1000px);
-transition: .4s ease-in-out;
-padding-bottom:30px;
+	position: fixed;
+	padding: 20px 0;
+	bottom: 0;
+	z-index: 999999;
+	width: 100%;
+	background: #fff;
+	transform: translateY(1000px);
+	transition: .4s ease-in-out;
+	padding-bottom: 30px;
+	box-shadow: -1px 0px 10px 0px #bebebe;
 }
+
 .sticky-cart2 .custom-sticky-form {
-transform:translateY(0) !important;
+	transform: translateY(0) !important;
 }
+
 variant-selector2 {
-display: flex;
+	display: flex;
 }
+
 .sticky-cart .product-form__buttons button {
-background: #37A471;
-color:#fff;
+	background: #37A471;
+	color: #fff;
 }
-.sticky-cart .product-form__buttons{
-background: #37A471;
+
+.sticky-cart .product-form__buttons {
+	background: #37A471;
 }
-@media(max-width:500px){
-.sticky-cart-custom-wrapper{
-flex-direction:column;
+
+@media(max-width:500px) {
+	.sticky-cart-custom-wrapper {
+		flex-direction: column;
+	}
+
+	variant-selector2 {
+		display: none;
+	}
+
+	.select-variant-options {
+		width: 100%;
+		background: transparent;
+	}
+
+	.sticky-image-wrapper {
+		/*   display:none; */
+	}
+
+	.submit-button-custom button {
+		padding: 15px 4px;
+		font-size: 12px;
+	}
+
+	.quantity-custom-sticky {
+		display: none;
+	}
+
+	.submit-button-custom {
+		width: 100%;
+		margin-top: 10px;
+	}
+
+	.sticky-product-wrapper {
+		display: block;
+		padding: 0 15px;
+	}
+
+	.product-sticky-add-cart-new.custom-sticky-form {
+		padding: 14px 0;
+	}
+
+	.submit-button-custom button {
+		padding: 15px 4px;
+		font-size: 16px;
+		width: 100%;
+		font-weight: bold;
+	}
+
+	variant-selector2 {
+		display: flex;
+		width: 100%;
+		margin-top: 3px;
+	}
 }
-variant-selector2 {
-display:none;
-}
-.select-variant-options {
-padding: 8px 25px;
-}
-  .sticky-image-wrapper{
-  display:none;
-  }
-  .submit-button-custom button {
-    padding: 15px 4px;
-    font-size: 12px;
-}
-  .quantity-custom-sticky {
-    display:none;
-  }
-  }
 </style>
 
-<script>
 
-function increaseValue() {
-  var value = parseInt(document.getElementById('quantity').value, 10);
-  value = isNaN(value) ? 0 : value;
-  value++;
-  document.getElementById('quantity').value = value;
+
+<script>
+  function increaseValue() {
+    var value = parseInt(document.getElementById('quantity').value, 10);
+    value = isNaN(value) ? 0 : value;
+    value++;
+    document.getElementById('quantity').value = value;
 }
 
 function decreaseValue() {
-  var value = parseInt(document.getElementById('quantity').value, 10);
-  value = isNaN(value) ? 0 : value;
-  value < 1 ? value = 1 : '';
-  value--;
-  document.getElementById('quantity').value = value;
+    var value = parseInt(document.getElementById('quantity').value, 10);
+    value = isNaN(value) ? 0 : value;
+    value < 1 ? value = 1 : '';
+    value--;
+    document.getElementById('quantity').value = value;
 }
 
 class VariantSelector2 extends HTMLElement {
-constructor(){
-super();
-this.addEventListener('change', this.onVariantChange);
-}
-onVariantChange(){
-this.getSelectedOptions();
-this.getSelectedVariant();
-if(this.currentVariant){
-this.updateURL();
-this.updateFormID();
-}
-}
+    constructor() {
+        super();
+        this.addEventListener('change', this.onVariantChange);
+    }
+    onVariantChange() {
+        this.getSelectedOptions();
+        this.getSelectedVariant();
+        if (this.currentVariant) {
+            this.updateURL();
+            this.updateFormID();
+        }
+    }
 
-getSelectedOptions(){
-this.options = Array.from(this.querySelectorAll('select'), select => select.value)
-console.log(this.options)
-}
+    getSelectedOptions() {
+        this.options = Array.from(this.querySelectorAll('select'), select => select.value)
+        console.log(this.options)
+    }
 
-getVariantJSON(){
-this.variantData = this.variantData || JSON.parse(this.querySelector('[type="application/json"]').textContent)
-return this.variantData;
-}
+    getVariantJSON() {
+        this.variantData = this.variantData || JSON.parse(this.querySelector('[type="application/json"]').textContent)
+        return this.variantData;
+    }
 
-getSelectedVariant(){
-this.currentVariant = this.getVariantJSON().find((variant) =>{
-const findings = !variant.options.map((option,index) => {
-return this.options[index] === option
-}).includes(false);
-if(findings) return variant;
-})
+    getSelectedVariant() {
+        this.currentVariant = this.getVariantJSON().find((variant) => {
+            const findings = !variant.options.map((option, index) => {
+                return this.options[index] === option
+            }).includes(false);
+            if (findings) return variant;
+        })
 
-console.log(this.currentVariant);
-}
+        console.log(this.currentVariant);
+    }
 
-updateURL(){
-if(!this.currentVariant) return
-window.history.replaceState({},'', `${this.dataset.url}?variant=${this.currentVariant.id}`);
-}
+    updateURL() {
+        if (!this.currentVariant) return
+        window.history.replaceState({}, '', `${this.dataset.url}?variant=${this.currentVariant.id}`);
+    }
 
-updateFormID(){
-const form_input = document.querySelector('#product-form').querySelector('input[name="id"]');
-form_input.value = this.currentVariant.id;
-}
+    updateFormID() {
+        const form_input = document.querySelector('#product-form').querySelector('input[name="id"]');
+        form_input.value = this.currentVariant.id;
+    }
 
 }
 customElements.define('variant-selector2', VariantSelector2);
 
-</script>
 
-<script>
 
-window.addEventListener('scroll', function(){
-const pageYOffset = window.pageYOffset;
-const buttonOffsetHeight = document.querySelector('.product-form__buttons').offsetTop;
-console.log(buttonOffsetHeight)
-if (pageYOffset > buttonOffsetHeight) {
-document.body.classList.add('sticky-cart2');
-}else{
-document.body.classList.remove('sticky-cart2');
-}
+
+window.addEventListener('scroll', function() {
+    const pageYOffset = window.pageYOffset;
+    const buttonOffsetHeight = document.querySelector('.product-form__buttons').offsetTop;
+    console.log(buttonOffsetHeight)
+    if (pageYOffset > buttonOffsetHeight) {
+        document.body.classList.add('sticky-cart2');
+    } else {
+        document.body.classList.remove('sticky-cart2');
+    }
 })
+
 </script>
