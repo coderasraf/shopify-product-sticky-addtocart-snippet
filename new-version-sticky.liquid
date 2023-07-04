@@ -10,41 +10,33 @@
 
 
 
-           <div class="price-wrapper-main-cust">
-                          {%- assign hide_sale_price = true -%}
-                      {%- if product.compare_at_price_max > product.price -%}
-                        {%- if current_variant.compare_at_price -%}
-                          {%- assign hide_sale_price = false -%}
-                        {%- endif -%}
-                        
-                          <span
-                          data-a11y-price
-                          class="visually-hidden"
-                          aria-hidden="{{ hide_sale_price }}">
-                            {{ 'products.general.regular_price' | t }}
-                        </span>
-                        <span data-product-price-wrap class="{% if hide_sale_price %}hide{% endif %}">
-                          <span data-compare-price class="product__price product__price--compare">
-                            {%- if current_variant.compare_at_price > current_variant.price -%}
-                              {{ current_variant.compare_at_price | money }}
-                            {%- endif -%}
-                          </span>
-                        </span>
-                        <span data-compare-price-a11y class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
-                      {%- else -%}
-                        <span data-a11y-price class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
-                      {%- endif -%}
+           <div class="price-wrapper-main-cust price-wrapper-main-cust-new ">
+                <span class="product-main-price" style="color:#008107;font-weight:bold;">{{ product.price | money }} </span>
+                 {% if product.compare_at_price > product.price %}
+                    <span class="compare-at-price-sticky" style="color:#999;">
+                      <s>{{ product.compare_at_price | money }}</s>
+                    </span>
 
-                      <span data-product-price
-                        class="product__price{% if current_variant.compare_at_price > current_variant.price %} sale-price{% endif %}">
-                        {%- unless product.empty? -%}
-                          {{ current_variant.price | money }}
-                        {%- else -%}
-                          {{ 1999 | money }}
-                        {%- endunless -%}
-                      </span>
-                        </div>
-           
+                     <span class="sale-badge-custom-sticky">
+                       {% assign savings = product.compare_at_price | minus: product.price  %}
+
+                        Bespaar {{ savings | money }}
+                     </span>
+                 {% endif %}
+            </div>
+
+           <style>
+   span.sale-badge-custom-sticky {
+    border: 1px solid #008107;
+    padding: 3px 14px;
+    color: #008107;
+    border-radius: 40px;
+    font-size: 12px;
+}
+             .price-wrapper-main-cust-new {
+    margin-top: 13px;
+}
+           </style>
            
          </div>
       </div>
